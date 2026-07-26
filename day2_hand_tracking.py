@@ -25,7 +25,21 @@ while cap.isOpened():
     # Gambar landmark jika tangan terdeteksi
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
-            mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+            mp_draw.draw_landmarks(
+                frame, 
+                hand_landmarks, 
+                mp_hands.HAND_CONNECTIONS,
+                mp_draw.DrawingSpec(
+                    color=(0, 255, 0),
+                    thickness=3,
+                    circle_radius=5
+                ),
+                mp_draw.DrawingSpec(
+                    color=(0, 100, 255),
+                    thickness=2
+                )
+            )
+            
 
     # Tampilkan frame
     cv2.imshow("Kamera saya", frame)
