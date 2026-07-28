@@ -24,6 +24,10 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
+# Variabel exponential smoothing
+smooth_factor = 0.2 # Nilai alpha (0.2 - 0.3 recommend)
+prev_x, prev_y = 0, 0 # Menyimpan posisi kursor di frame sebelumnya
+
 # Variabel pembantu cegah spam klik
 already_clicked = False
 
@@ -52,12 +56,21 @@ while cap.isOpened():
             x2, y2 = int(index.x * w), int(index.y * h)
             x3, y3 = int(middle.x * w), int(middle.y * h)
 
-             # Petakan koordinat index finger
-            mouse_x = int(index.x * screen_w)
-            mouse_y = int(index.y * screen_h)
-
             # Hitung jarak thumb & index
             distance = math.hypot(x3 - x1, y3 - y1)
+
+            # Petakan koordinat index finger
+            target_x = int(index.x * screen_w)
+            target_y = int(index.y * screen_h)
+
+            curr_x = prev_x + (target_x - prev_x) * smooth_factor
+            curr_y = prev_y + (target_y - prev_y) * smooth_factor
+
+            # Konversi ke integer untuk posisi mouse fisik
+            mouse_x, mouse_y = int(curr_x), int(curr_y)
+
+            # Update posisi sebelumnya untuk perulangan berikutnya
+            prev_x, prev_y = curr_x, curr_y
 
             # Logika CLick Mouse
             if distance < 35:
